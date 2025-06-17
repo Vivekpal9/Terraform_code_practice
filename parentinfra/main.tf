@@ -1,71 +1,77 @@
 module "vm1" {
-  source = "../modules/azurem_resource/virtual_machine"
+  depends_on = [ module.subnet ]
+  source = "../modules/azurem_resource/azurerm_vm"
 
-  resource_group_name = ""
-  virtual_network_name = ""
-  subnet_name          = ""
-  public_ip_name       = ""
-  virtual_machine_name = "vm1-azurem"
-  location             = module.resource_group.location
-  admin_username       = "azureuser"
-  admin_password       = "P@ssw0rd1234!"
-  
+  resource_group_name = "rg-0605"
+  location            = "centralIndia"
+  linux_virtual_machine       =  "vm-deploy"
+  size             =  "Standard_B1s"
+  publisher      = "Canonical"
+  offer          = "0001-com-ubuntu-server-focal"
+  sku            = "20_04-lts"
+  nic_name             = "nic-practice"
+  public_ip_name    = "pip-practice"
+  virtual_network_name         = "vnet-dev"
+  subnet_name = "subnet-practice"
 }
 
 
 
 module "public_ip"{
-source = "../modules/azurem_resource/public_ip"
-public_ip_name = "pip-azurem"
-resource_group_name = "rg-azurem"
-location = "eastus"
-  allocation_method = "Static"
+  depends_on = [ module.subnet ]
+source = "../modules/azurem_resource/azurerm_public_ip"
+public_ip_name = "pip-practice"
+resource_group_name = "rg-0605"
+location = "CentralIndia"
+
 }
 
 
 
 
 module "resource_group" {
-  source = "../modules/azurem_resource/resource_group"
+  source = "../modules/azurem_resource/azurerm_rg"
 
-  resource_group_name = "rg-azurem"
-  location            = "eastus"
+  resource_group_name = "rg-0605"
+  location            = "centralIndia"
   
 }
 module "virtual_network" {
-  source = "../modules/azurem_resource/virtual_network"
   depends_on = [ module.resource_group ]
-
-  resource_group_name = module.resource_group.resource_group_name
-  virtual_network_name = "vnet-azurem"
+  source = "../modules/azurem_resource/azurerm_vnet"
+  
+location = "CentralIndia"
+  resource_group_name = "rg-0605"
+  virtual_network_name = "vnet-dev"
   address_space       = ["10.0.0.0/16"]
 
 }
 module "subnet" {
-  source = "../modules/azurem_resource/subnet"
-    depends_on = [ module.virtual_network ]
+  depends_on = [ module.virtual_network ]
+  source = "../modules/azurem_resource/azurerm_subnet"
+    
 
-  resource_group_name    = module.resource_group.resource_group_name
-  virtual_network_name   = module.virtual_network.virtual_network_name
-  subnet_name            = "subnet-azurem"
+  resource_group_name    = "rg-0605"
+  virtual_network_name   = "vnet-dev"
+  subnet_name            = "subnet-practice"
   
 }
 module "sql_server" {
-  source = "../modules/azurem_resource/sql_server"
+  depends_on = [ module.resource_group ]
+  source = "../modules/azurem_resource/azurerm_server"
 
-  resource_group_name = module.resource_group.resource_group_name
-  sql_server_name     = "sqlserver-azurem"
-  location            = module.resource_group.location
-  administrator_login = "sqladmin"
-  administrator_login_password = "P@ssw0rd1234!"
+  resource_group_name = "rg-0605"
+  sql_server_name     = "dev-server86768"
+  location            = "centralIndia"
   
 }
 
 module "sql_database" {
-  source = "../modules/azurem_resource/sql_database"
   depends_on = [ module.sql_server ]
-  resource_group_name = module.resource_group.resource_group_name
-  sql_server_name     = module.sql_server.sql_server_name
-  sql_database_name   = "sqldb-azurem"
+  source = "../modules/azurem_resource/azurerm_db"
+  
+  
+  
+    db_name = "dev-db"
   
 }

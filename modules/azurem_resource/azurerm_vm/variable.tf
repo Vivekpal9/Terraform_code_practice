@@ -11,22 +11,14 @@ variable "location"{}
   
 variable "size"{}
   
-variable "admin_username" {
-  
-}
-variable "admin_password"{
-  
-}
 
-variable "source_image_reference"{}
+
+
   
 variable "sku"{}
 variable "publisher"{}
 variable "offer"{}
   
-variable "version"{
-  
-}
 
 
 

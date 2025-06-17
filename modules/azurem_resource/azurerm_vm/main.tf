@@ -17,8 +17,8 @@ resource "azurerm_linux_virtual_machine" "vm1"{
   resource_group_name = var.resource_group_name
   location            = var.location
   size                = var.size
-  admin_username      = var.admin_username
-  admin_password = var.admin_password
+  admin_username      = data.azurerm_key_vault_secret.vm-admin_username.value
+  admin_password = data.azurerm_key_vault_secret.vm-passwd.value
   disable_password_authentication = false
   network_interface_ids = [ azurerm_network_interface.nic.id
   ]
@@ -33,6 +33,6 @@ resource "azurerm_linux_virtual_machine" "vm1"{
     publisher = var.publisher
     offer     = var.offer
     sku       = var.sku
-    version   = var.version
+    version   = "latest"
   }
 }

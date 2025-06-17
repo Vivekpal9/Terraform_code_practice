@@ -12,16 +12,16 @@ data "azurerm_public_ip" "pip"{
 
 data "azurerm_key_vault" "kv" {
     name = "locker-kv"
-    resource_group_name = ""
+    resource_group_name = "rg-kv"
   
 }
 
-data "azurerm_key_vault_secret" "name" {
-    name = "example-secret"
+data "azurerm_key_vault_secret" "vm-admin_username" {
+    name = "vm-username"
     key_vault_id = data.azurerm_key_vault.kv.id
 }
 
-data "azurerm_key_vault_secret" "name" {
-    name = "example-secret"
+data "azurerm_key_vault_secret" "vm-passwd" {
+    name = "vm-passwd"
     key_vault_id = data.azurerm_key_vault.kv.id 
 }
